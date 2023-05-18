@@ -55,13 +55,12 @@ public class User {
   
   public User(@NotBlank @Size(max = 20) String username, @NotBlank @Size(max = 50) @Email String email,
       @NotBlank @Size(max = 120) String password, @NotBlank @Size(max = 100) String firstname,
-      @NotBlank @Size(max = 100) String lastname, @NotBlank @Size(max = 1) String status) {
+      @NotBlank @Size(max = 100) String lastname) {
     this.username = username;
     this.email = email;
     this.password = password;
     this.firstname = firstname;
     this.lastname = lastname;
-    this.status = status;
   }
 
 

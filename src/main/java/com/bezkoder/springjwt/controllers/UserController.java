@@ -3,6 +3,7 @@ package com.bezkoder.springjwt.controllers;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,27 +24,31 @@ public class UserController {
     private UserService usuarioService;
 
     @GetMapping
+    @PreAuthorize("hasRole('MODERATOR') or hasRole('ADMIN')")
     public List<User> listar(){
         return usuarioService.listarTodos();
     }
-    
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('MODERATOR') or hasRole('ADMIN')")
     public User getUsuarioById(@PathVariable("id") Long id ){
         return usuarioService.listarById(id);
     } 
-    
+
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public User insertar(@RequestBody User usuarioBody){
         return usuarioService.insertar(usuarioBody);
     }
     
     @PutMapping("/editar/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public User actualizar(@PathVariable Long id, @RequestBody User usuarioBody){
         usuarioBody.setId(id);
         return usuarioService.actualizar(id, usuarioBody);
     }
 
     @PutMapping("/eliminar/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public List<User> eliminar(@PathVariable Long id){
         return usuarioService.eliminar(id);
     } 

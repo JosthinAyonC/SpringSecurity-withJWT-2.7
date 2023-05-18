@@ -20,15 +20,12 @@ public class SignupRequest {
   @Size(min = 6, max = 40)
   private String password;
 
-  @NotBlank
   @Size(max = 100)
   private String firstname;
   
-  @NotBlank
   @Size(max = 100)
   private String lastname;
   
-  @NotBlank
   @Size(max = 1)
   private String status;
 

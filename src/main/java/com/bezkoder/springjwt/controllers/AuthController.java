@@ -65,8 +65,7 @@ public class AuthController {
 
   @PostMapping("/signup")
   public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
-
-    ResponseEntity<?> response = userService.registrar(signUpRequest );
+    ResponseEntity<?> response = userService.registrar(signUpRequest);
     return response;
   }
 }

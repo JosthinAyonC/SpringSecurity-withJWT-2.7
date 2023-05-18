@@ -57,29 +57,9 @@ public class UserService {
         return usuarioRepository.findByEstado();
     }
 
-    private void copiarCamposNoNulos(User fuente, User destino) {
-        if (fuente.getFirstname() != null) {
-            destino.setFirstname(fuente.getFirstname());
-        }
-        if (fuente.getLastname() != null) {
-            destino.setLastname(fuente.getLastname());
-        }
-        if (fuente.getEmail() != null) {
-            destino.setEmail(fuente.getEmail());
-        }
-        if (fuente.getPassword() != null) {
-            destino.setPassword(fuente.getPassword());
-        }
-        // if (fuente.getRoles() != null) {
-        // destino.setRoles(fuente.getRoles());
-        // }
-        if (fuente.getStatus() != null) {
-            destino.setStatus(fuente.getStatus());
-        }
-    }
-
+    //en la ruta /api/auth/signup va a guardar nuevo usuario
     public ResponseEntity<?> registrar(@Valid SignupRequest signUpRequest) {
-        
+
         if (usuarioRepository.existsByUsername(signUpRequest.getUsername())) {
             return ResponseEntity
                     .badRequest()
@@ -91,16 +71,30 @@ public class UserService {
                     .badRequest()
                     .body(new MessageResponse("Error: Email is already in use!"));
         }
+        if (signUpRequest.getUsername() == null || signUpRequest.getEmail() == null || 
+        signUpRequest.getLastname() == null || signUpRequest.getFirstname() == null || 
+         signUpRequest.getPassword() == null) {
 
-        // Create new user's account
+            return ResponseEntity
+                    .badRequest()
+                    .body(new MessageResponse("Error: Campos vacios!"));
+        }
+
         User user = new User(signUpRequest.getUsername(),
                 signUpRequest.getEmail(),
                 encoder.encode(signUpRequest.getPassword()),
                 signUpRequest.getFirstname(),
-                signUpRequest.getLastname(),
-                signUpRequest.getStatus());
+                signUpRequest.getLastname());
 
         Set<String> strRoles = signUpRequest.getRole();
+        user.setRoles(asignacionRol(strRoles));
+        user.setStatus("A");
+        usuarioRepository.save(user);
+        return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
+    }
+    //Metodo para asignar roles a usuarios nuevos
+    private Set<Role> asignacionRol(Set<String> strRoles) {
+
         Set<Role> roles = new HashSet<>();
 
         if (strRoles == null) {
@@ -129,10 +123,28 @@ public class UserService {
                 }
             });
         }
-
-        user.setRoles(roles);
-        usuarioRepository.save(user);
-        return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
+        return roles;
     }
-    
+    //Metodo para copiar campos no nulos
+    private void copiarCamposNoNulos(User fuente, User destino) {
+        if (fuente.getFirstname() != null) {
+            destino.setFirstname(fuente.getFirstname());
+        }
+        if (fuente.getLastname() != null) {
+            destino.setLastname(fuente.getLastname());
+        }
+        if (fuente.getEmail() != null) {
+            destino.setEmail(fuente.getEmail());
+        }
+        if (fuente.getPassword() != null) {
+            destino.setPassword(fuente.getPassword());
+        }
+        // if (fuente.getRoles() != null) {
+        // destino.setRoles(fuente.getRoles());
+        // }
+        if (fuente.getStatus() != null) {
+            destino.setStatus(fuente.getStatus());
+        }
+    }
+
 }

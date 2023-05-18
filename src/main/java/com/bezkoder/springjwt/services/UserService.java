@@ -2,9 +2,7 @@ package com.bezkoder.springjwt.services;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.HashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
@@ -13,10 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.bezkoder.springjwt.models.ERole;
 import com.bezkoder.springjwt.models.Role;
 import com.bezkoder.springjwt.models.User;
-import com.bezkoder.springjwt.payload.request.SignupRequest;
 import com.bezkoder.springjwt.payload.response.MessageResponse;
 import com.bezkoder.springjwt.repository.RoleRepository;
 import com.bezkoder.springjwt.repository.UserRepository;
@@ -35,9 +31,8 @@ public class UserService {
         return usuarioRepository.save(user);
     }
 
-    public User actualizar(Long id, User user) {
-        Optional<User> optionalUsuario = usuarioRepository.findById(id);
-
+    public User actualizar(User user) {
+        Optional<User> optionalUsuario = usuarioRepository.findById(user.getId());
         if (optionalUsuario.isEmpty()) {
             return null;
         }
@@ -82,11 +77,10 @@ public class UserService {
             .body(new MessageResponse("Error: Campos vacios!"));
         }
         
-        
         Set<Role> strRoles = signUpRequest.getRoles();
-        
         signUpRequest.setRoles(strRoles);
         signUpRequest.setStatus("A");
+        signUpRequest.setPassword(encoder.encode(signUpRequest.getPassword()));
         
         usuarioRepository.save(signUpRequest);
         
@@ -107,9 +101,9 @@ public class UserService {
         if (fuente.getPassword() != null) {
             destino.setPassword(fuente.getPassword());
         }
-        // if (fuente.getRoles() != null) {
-        // destino.setRoles(fuente.getRoles());
-        // }
+        if (fuente.getRoles() != null) {
+        destino.setRoles(fuente.getRoles());
+        }
         if (fuente.getStatus() != null) {
             destino.setStatus(fuente.getStatus());
         }

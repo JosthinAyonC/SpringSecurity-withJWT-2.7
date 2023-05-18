@@ -3,7 +3,7 @@
 Cosas a considerar al manipular la plantilla backend: 
 
 1. Agregar rutas de acceso en WebSecurityConfig.java
-2. Agregar en la db en inserto de roles, y en el archivo ERoles.java agregar el rol o la modifiacion.
+2. Agregar en la db en inserto de roles.
 
 ## Run Spring Boot application
 ```

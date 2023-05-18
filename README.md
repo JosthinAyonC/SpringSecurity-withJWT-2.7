@@ -16,7 +16,7 @@ INSERT INTO roles(name) VALUES('ROLE_USER');
 INSERT INTO roles(name) VALUES('ROLE_MODERATOR');
 INSERT INTO roles(name) VALUES('ROLE_ADMIN');
 ```
-## Info de como enviar el body
+## Info de como enviar el body en caso de registrar usuario
 ```
 {   "username":"franklinmp69",
     "lastname":"franklin",
@@ -26,6 +26,22 @@ INSERT INTO roles(name) VALUES('ROLE_ADMIN');
     "status":"A",
     "role":["admin", "mod"]
 }
+```
+## Info de como enviar el body en caso de creacion de usuario por administrador
+```
+{
+        "username": "josthin24",
+        "email": "jayonss@hotmail.com",
+        "password": "lokoloko21",
+        "firstname": "Josthin",
+        "lastname": "Ayon",
+        "status": "A",
+        "roles": [
+            {
+                "id": 2
+            }
+        ]
+    }
 ```
 ## Info de firma y duracion de token
 ```

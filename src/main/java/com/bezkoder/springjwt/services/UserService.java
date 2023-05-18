@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
@@ -30,6 +31,7 @@ public class UserService {
     PasswordEncoder encoder;
 
     public User insertar(User user) {
+        user.setPassword(encoder.encode(user.getPassword()));
         return usuarioRepository.save(user);
     }
 
@@ -87,11 +89,13 @@ public class UserService {
                 signUpRequest.getLastname());
 
         Set<String> strRoles = signUpRequest.getRole();
+        
         user.setRoles(asignacionRol(strRoles));
         user.setStatus("A");
         usuarioRepository.save(user);
         return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
     }
+
     //Metodo para asignar roles a usuarios nuevos
     private Set<Role> asignacionRol(Set<String> strRoles) {
 

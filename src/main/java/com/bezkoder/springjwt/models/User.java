@@ -32,15 +32,15 @@ public class User {
   @Size(max = 120)
   private String password;
   
-  @NotBlank
+  // @NotBlank
   @Size(max = 100)
   private String firstname;
   
-  @NotBlank
+  // @NotBlank
   @Size(max = 100)
   private String lastname;
   
-  @NotBlank
+  // @NotBlank
   @Size(max = 1)
   private String status;
   

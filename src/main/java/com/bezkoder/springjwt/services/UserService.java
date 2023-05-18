@@ -60,75 +60,39 @@ public class UserService {
     }
 
     //en la ruta /api/auth/signup va a guardar nuevo usuario
-    public ResponseEntity<?> registrar(@Valid SignupRequest signUpRequest) {
-
+    public ResponseEntity<?> registrar(@Valid User signUpRequest) {
+        
         if (usuarioRepository.existsByUsername(signUpRequest.getUsername())) {
             return ResponseEntity
-                    .badRequest()
-                    .body(new MessageResponse("Error: Username is already taken!"));
+            .badRequest()
+            .body(new MessageResponse("Error: Username is already taken!"));
         }
-
+        
         if (usuarioRepository.existsByEmail(signUpRequest.getEmail())) {
             return ResponseEntity
-                    .badRequest()
-                    .body(new MessageResponse("Error: Email is already in use!"));
+            .badRequest()
+            .body(new MessageResponse("Error: Email is already in use!"));
         }
         if (signUpRequest.getUsername() == null || signUpRequest.getEmail() == null || 
         signUpRequest.getLastname() == null || signUpRequest.getFirstname() == null || 
-         signUpRequest.getPassword() == null) {
-
+        signUpRequest.getPassword() == null) {
+            
             return ResponseEntity
-                    .badRequest()
-                    .body(new MessageResponse("Error: Campos vacios!"));
+            .badRequest()
+            .body(new MessageResponse("Error: Campos vacios!"));
         }
-
-        User user = new User(signUpRequest.getUsername(),
-                signUpRequest.getEmail(),
-                encoder.encode(signUpRequest.getPassword()),
-                signUpRequest.getFirstname(),
-                signUpRequest.getLastname());
-
-        Set<String> strRoles = signUpRequest.getRole();
         
-        user.setRoles(asignacionRol(strRoles));
-        user.setStatus("A");
-        usuarioRepository.save(user);
+        
+        Set<Role> strRoles = signUpRequest.getRoles();
+        
+        signUpRequest.setRoles(strRoles);
+        signUpRequest.setStatus("A");
+        
+        usuarioRepository.save(signUpRequest);
+        
         return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
     }
 
-    //Metodo para asignar roles a usuarios nuevos
-    private Set<Role> asignacionRol(Set<String> strRoles) {
-
-        Set<Role> roles = new HashSet<>();
-
-        if (strRoles == null) {
-            Role userRole = roleRepository.findByName(ERole.ROLE_USER)
-                    .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-            roles.add(userRole);
-        } else {
-            strRoles.forEach(role -> {
-                switch (role) {
-                    case "admin":
-                        Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
-                                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-                        roles.add(adminRole);
-
-                        break;
-                    case "mod":
-                        Role modRole = roleRepository.findByName(ERole.ROLE_MODERATOR)
-                                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-                        roles.add(modRole);
-
-                        break;
-                    default:
-                        Role userRole = roleRepository.findByName(ERole.ROLE_USER)
-                                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-                        roles.add(userRole);
-                }
-            });
-        }
-        return roles;
-    }
     //Metodo para copiar campos no nulos
     private void copiarCamposNoNulos(User fuente, User destino) {
         if (fuente.getFirstname() != null) {

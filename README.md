@@ -16,18 +16,7 @@ INSERT INTO roles(name) VALUES('ROLE_USER');
 INSERT INTO roles(name) VALUES('ROLE_MODERATOR');
 INSERT INTO roles(name) VALUES('ROLE_ADMIN');
 ```
-## Info de como enviar el body en caso de registrar usuario
-```
-{   "username":"franklinmp69",
-    "lastname":"franklin",
-    "firstname": "Campoverde",
-    "email":"franklin69@hotmail.com",
-    "password":"lokoloko21",
-    "status":"A",
-    "role":["admin", "mod"]
-}
-```
-## Info de como enviar el body en caso de creacion de usuario por administrador
+## Info de como enviar el body para creacion, registro y edicion de usuario.
 ```
 {
         "username": "josthin24",

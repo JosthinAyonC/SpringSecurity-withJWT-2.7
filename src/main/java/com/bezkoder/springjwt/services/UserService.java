@@ -14,21 +14,25 @@ import org.springframework.stereotype.Service;
 import com.bezkoder.springjwt.models.Role;
 import com.bezkoder.springjwt.models.User;
 import com.bezkoder.springjwt.payload.response.MessageResponse;
-import com.bezkoder.springjwt.repository.RoleRepository;
+// import com.bezkoder.springjwt.repository.RoleRepository;
 import com.bezkoder.springjwt.repository.UserRepository;
 
 @Service
 public class UserService {
     @Autowired
     private UserRepository usuarioRepository;
-    @Autowired
-    private RoleRepository roleRepository;
+    // @Autowired
+    // private RoleRepository roleRepository;
     @Autowired
     PasswordEncoder encoder;
 
-    public User insertar(User user) {
+    public ResponseEntity<?>  insertar(User user) {
+        if(camposUnicosYnoNulos(user).getStatusCode().is4xxClientError()){
+            return camposUnicosYnoNulos(user);
+        }
         user.setPassword(encoder.encode(user.getPassword()));
-        return usuarioRepository.save(user);
+        usuarioRepository.save(user);
+        return ResponseEntity.ok(new MessageResponse("Usuario registrado satisfactoriamente!"));
     }
 
     public User actualizar(User user) {
@@ -56,27 +60,10 @@ public class UserService {
 
     //en la ruta /api/auth/signup va a guardar nuevo usuario
     public ResponseEntity<?> registrar(@Valid User signUpRequest) {
-        
-        if (usuarioRepository.existsByUsername(signUpRequest.getUsername())) {
-            return ResponseEntity
-            .badRequest()
-            .body(new MessageResponse("Error: Username is already taken!"));
-        }
-        
-        if (usuarioRepository.existsByEmail(signUpRequest.getEmail())) {
-            return ResponseEntity
-            .badRequest()
-            .body(new MessageResponse("Error: Email is already in use!"));
-        }
-        if (signUpRequest.getUsername() == null || signUpRequest.getEmail() == null || 
-        signUpRequest.getLastname() == null || signUpRequest.getFirstname() == null || 
-        signUpRequest.getPassword() == null) {
             
-            return ResponseEntity
-            .badRequest()
-            .body(new MessageResponse("Error: Campos vacios!"));
+        if(camposUnicosYnoNulos(signUpRequest).getStatusCode().is4xxClientError()){
+            return camposUnicosYnoNulos(signUpRequest);
         }
-        
         Set<Role> strRoles = signUpRequest.getRoles();
         signUpRequest.setRoles(strRoles);
         signUpRequest.setStatus("A");
@@ -84,7 +71,7 @@ public class UserService {
         
         usuarioRepository.save(signUpRequest);
         
-        return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
+        return ResponseEntity.ok(new MessageResponse("Usuario registrado satisfactoriamente!"));
     }
 
     //Metodo para copiar campos no nulos
@@ -107,6 +94,28 @@ public class UserService {
         if (fuente.getStatus() != null) {
             destino.setStatus(fuente.getStatus());
         }
+    }
+
+    //Metodo para verificar email, usuario existente y campos vacios
+    private ResponseEntity<?> camposUnicosYnoNulos(User user) {
+        if (usuarioRepository.existsByUsername(user.getUsername())) {
+            return ResponseEntity
+            .badRequest()
+            .body(new MessageResponse("Error: Usuario utilizado anteriormente!"));
+        }
+        if (usuarioRepository.existsByEmail(user.getEmail())) {
+            return ResponseEntity
+            .badRequest()
+            .body(new MessageResponse("Error: Email ya utilizado anteriormente!"));
+        }
+        if (user.getUsername() == null || user.getEmail() == null || 
+        user.getLastname() == null || user.getFirstname() == null || 
+        user.getPassword() == null) {
+            return ResponseEntity
+            .badRequest()
+            .body(new MessageResponse("Error: Campos vacios!"));
+        }
+        return ResponseEntity.ok(new MessageResponse("Usuario registrado satisfactoriamente!"));
     }
 
 }
